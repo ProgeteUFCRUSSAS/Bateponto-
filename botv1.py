@@ -20,8 +20,8 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 user_times = {}
 paused_users = {}
-LOG_CHANNEL_NAME = "logs"  # Nome do canal de logs
-HISTORY_CHANNEL_NAME = "historico-pontos"  # Nome do canal de histórico de pontos
+LOG_CHANNEL_NAME = "logs"  
+HISTORY_CHANNEL_NAME = "historico-pontos"  
 
 async def create_tables(conn):
     await conn.execute("""
@@ -54,22 +54,18 @@ async def connect_to_db():
 @bot.event
 async def on_ready():
     print(f'Bot conectado como {bot.user}')
-    await connect_to_db()  # Cria a conexão com o banco de dados ao iniciar o bot
+    await connect_to_db()  
     print('Conectado ao banco de dados PostgreSQL')
 
 async def get_log_channel(guild):
-    # Tenta encontrar o canal de logs
     log_channel = discord.utils.get(guild.channels, name=LOG_CHANNEL_NAME)
     if log_channel is None:
-        # Cria o canal de logs se não existir
         log_channel = await guild.create_text_channel(LOG_CHANNEL_NAME)
     return log_channel
 
 async def get_history_channel(guild):
-    # Tenta encontrar o canal de histórico de pontos
     history_channel = discord.utils.get(guild.channels, name=HISTORY_CHANNEL_NAME)
     if history_channel is None:
-        # Cria o canal de histórico de pontos se não existir
         history_channel = await guild.create_text_channel(HISTORY_CHANNEL_NAME)
     return history_channel
 
@@ -201,8 +197,8 @@ async def historico(ctx, periodo: str, member: discord.Member = None):
         start_date = today - datetime.timedelta(days=today.weekday())  # Início da semana (segunda-feira)
         end_date = start_date + datetime.timedelta(days=6)  # Fim da semana (domingo)
     elif periodo.lower() == 'mensal':
-        start_date = today.replace(day=1)  # Primeiro dia do mês
-        end_date = (today.replace(day=28) + datetime.timedelta(days=4)).replace(day=1) - datetime.timedelta(days=1)  # Último dia do mês
+        start_date = today.replace(day=1)
+        end_date = (today.replace(day=28) + datetime.timedelta(days=4)).replace(day=1) - datetime.timedelta(days=1)
     else:
         await ctx.send(f"Período inválido. Use 'semanal' ou 'mensal'.")
         return
@@ -227,7 +223,6 @@ async def historico(ctx, periodo: str, member: discord.Member = None):
         leave_time = record['last_leave_time'].strftime("%H:%M:%S") if record['last_leave_time'] else "N/A"
         total_duration = str(record['total_duration']) if record['total_duration'] else "00:00:00"
 
-        # Organiza as informações em um campo único, com separadores visuais
         field_value = (
             f"**📅 Data de Entrada:** {join_date}\n"
             f"**⏰ Horário de Entrada:** {join_time}\n"
@@ -243,7 +238,7 @@ async def historico(ctx, periodo: str, member: discord.Member = None):
             inline=False
         )
 
-    history_channel = await get_history_channel(ctx.guild)  # Obtém o canal de histórico de pontos
-    await history_channel.send(embed=embed)  # Envia o histórico para o canal de histórico de pontos
+    history_channel = await get_history_channel(ctx.guild) 
+    await history_channel.send(embed=embed) 
 
 bot.run(TOKEN)
